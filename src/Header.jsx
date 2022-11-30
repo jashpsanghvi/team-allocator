@@ -1,9 +1,16 @@
-const Header = () => {
+const Header = (props) => {
+
+    const { selectedTeam, teamSize } = props
 
     return (
-        <header>
-            <h1>Header</h1>
-        </header>
+			<header className="container">
+				<div className="row justify-content-center mt-3 mb-4">
+					<div className="col-8">
+						<h1>Team Allocation</h1>
+						<h3>{selectedTeam} has {teamSize} members</h3>
+					</div>
+				</div>
+			</header>
     )
 
 }
