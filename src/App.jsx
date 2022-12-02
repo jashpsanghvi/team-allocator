@@ -2,11 +2,14 @@ import './App.css'
 import Header from './Header'
 import Footer from './Footer'
 import Employees from './Employees'
-import { useState } from 'react'
+import GroupedTeamMembers from './GroupedTeamMembers'
+import Nav from './Nav'
+import { useState, useEffect } from 'react'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 
 function App() {
 
-  const [employees, setEmployees] = useState([{
+  const [employees, setEmployees] = useState(JSON.parse(localStorage.getItem("employeesList")) || [{
     id: 1,
     fullName: "Bob Jones",
     designation: "JavaScript Developer",
@@ -93,7 +96,15 @@ function App() {
 
   const teams = ["Aurora", "Dynamo", "Kinesis", "Lambda"]
 
-  const [selectedTeam, setTeam] = useState("Kinesis")
+  const [selectedTeam, setTeam] = useState(JSON.parse(localStorage.getItem("selectedTeam")) || "Kinesis")
+
+  useEffect(() => {
+    localStorage.setItem("employeesList", JSON.stringify(employees))
+  }, [employees])
+
+  useEffect(() => {
+    localStorage.setItem("selectedTeam", JSON.stringify(selectedTeam))
+  }, [selectedTeam])
 
   const handleTeamChangeEvent = (event) => {
     setTeam(event.target.value)
@@ -114,16 +125,23 @@ function App() {
   }
 
   return (
-    <div>
+    <Router>
+      <Nav/>
       <Header selectedTeam={selectedTeam}
         teamSize={employees.filter(employee => employee.teamName === selectedTeam).length}/>
-      <Employees employees={employees}
-        teams={teams}
-        selectedTeam={selectedTeam}
-        handleTeamChangeEvent={handleTeamChangeEvent}
-        handleCardClickEvent={handleCardClickEvent}/>
+      <Routes>
+        <Route path='/' element={<Employees employees={employees}
+          teams={teams}
+          selectedTeam={selectedTeam}
+          handleTeamChangeEvent={handleTeamChangeEvent}
+          handleCardClickEvent={handleCardClickEvent}/>} />
+        <Route path='/teams' element={<GroupedTeamMembers teams={teams}
+          selectedTeam={selectedTeam}
+          employees={employees}
+          setTeam={setTeam}/>} />
+      </Routes>
       <Footer/>
-    </div>
+    </Router>
   )
 }
 
